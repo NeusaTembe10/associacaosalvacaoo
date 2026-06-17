@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { ChevronRight, Leaf } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import logo from "../assets/logo.png";
 export default function WelcomeScreen() {
   const navigate = useNavigate();
