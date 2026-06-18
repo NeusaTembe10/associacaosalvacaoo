@@ -10,8 +10,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useMembers } from "../context/MembersContext";
-
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+import { API_URL } from "../lib/api";
 
 interface Culto {
   _id?: string;
@@ -109,7 +108,7 @@ export default function CultosScreen() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
       {/* Header */}
-      <div className="bg-gradient-to-r from-primary-900 to-primary-800 text-black px-4 sm:px-6 lg:px-8 py-8">
+      <div className="bg-gradient-to-r from-primary-900 to-primary-800 text-white px-4 sm:px-6 lg:px-8 py-8">
         <div className="max-w-6xl mx-auto">
           <h1 className="text-3xl sm:text-4xl font-bold mb-2">Cultos</h1>
           <p className="text-primary-200 text-base sm:text-lg">

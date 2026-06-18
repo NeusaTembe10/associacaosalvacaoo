@@ -122,6 +122,8 @@ npm start
 VITE_API_URL=http://localhost:5000/api
 ```
 
+> No Vercel, defina `VITE_API_URL` como a URL pública do seu backend.
+
 ### Backend (backend/.env)
 
 ```

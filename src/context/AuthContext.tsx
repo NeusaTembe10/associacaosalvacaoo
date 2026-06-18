@@ -6,8 +6,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+import { API_URL } from "../lib/api";
 
 interface User {
   name?: string;
