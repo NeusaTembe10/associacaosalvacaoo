@@ -122,7 +122,9 @@ npm start
 VITE_API_URL=http://localhost:5000/api
 ```
 
-> No Vercel, defina `VITE_API_URL` como a URL pública do seu backend.
+> No Vercel, para este monorepo com backend integrado, use `VITE_API_URL=/api` ou deixe em branco. A aplicação irá consumir o backend serverless do próprio projeto.
+
+> Verifique também o arquivo `vercel.json` na raiz para a configuração de rotas e builds.
 
 ### Backend (backend/.env)
 
@@ -130,7 +132,11 @@ VITE_API_URL=http://localhost:5000/api
 MONGO_URI=mongodb://localhost:27017/associacao_salvacao
 PORT=5000
 NODE_ENV=development
+AUTH_PASSWORD=SalvacaoApp@2026
+JWT_SECRET=algumsegredosespecial
 ```
+
+> O login padrão aceita qualquer nome válido e a senha definida em `AUTH_PASSWORD`. Se o valor não for informado, a senha padrão é `SalvacaoApp@2026`.
 
 ## API Endpoints
 

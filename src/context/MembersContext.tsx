@@ -32,8 +32,6 @@ interface MembersContextValue {
 
 const MembersContext = createContext<MembersContextValue | null>(null);
 
-const API_URL = import.meta.env.VITE_API_URL || "/api";
-
 export function MembersProvider({ children }: { children: ReactNode }) {
   const auth = useAuth();
   const [members, setMembers] = useState<Member[]>([]);
