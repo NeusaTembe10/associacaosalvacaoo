@@ -4,6 +4,8 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import memberRoutes from "./routes/memberRoutes.js";
 import cultoRoutes from "./routes/cultoRoutes.js";
+import authRoutes from "./routes/authRoutes.js";
+import { verifyToken } from "./middleware/authMiddleware.js";
 
 dotenv.config();
 
@@ -17,12 +19,15 @@ app.use(express.json());
 // Database connection
 mongoose
   .connect(process.env.MONGO_URI || "mongodb://localhost:27017/associacao_salvacao")
-  .then(() => console.log("✓ MongoDB connected"))
+  .then(() => {
+    console.log("✓ MongoDB connected");
+  })
   .catch((err) => console.error("✗ MongoDB connection error:", err));
 
 // Routes
-app.use("/api/members", memberRoutes);
-app.use("/api/cultos", cultoRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/members", verifyToken, memberRoutes);
+app.use("/api/cultos", verifyToken, cultoRoutes);
 
 // Health check
 app.get("/api/health", (req, res) => {
