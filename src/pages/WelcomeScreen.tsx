@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { ChevronRight } from "lucide-react";
-import logo from "../assets/logo.png";
+import logo from "../assets/logo.jpeg";
 export default function WelcomeScreen() {
   const navigate = useNavigate();
 
@@ -22,10 +22,11 @@ export default function WelcomeScreen() {
         {/* Title */}
         <div className="text-center mb-4">
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-white mb-2">
-            Salvação
+            
+             Associação
           </h1>
           <h2 className="text-2xl sm:text-3xl font-semibold text-primary-300 mb-4">
-            Associação
+           Salvação
           </h2>
           <p className="text-lg sm:text-xl text-primary-200 font-medium mb-6">
             Plantando os céus na terra
