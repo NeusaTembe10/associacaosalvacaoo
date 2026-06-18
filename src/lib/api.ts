@@ -1,2 +1,10 @@
 const apiUrl = import.meta.env.VITE_API_URL?.trim();
-export const API_URL = apiUrl && apiUrl !== "" ? apiUrl : "/api";
+const isLocalHost = typeof window !== "undefined" && window.location.hostname === "localhost";
+
+export const API_URL = apiUrl && apiUrl !== ""
+  ? isLocalHost
+    ? apiUrl
+    : apiUrl.includes("localhost")
+      ? "/api"
+      : apiUrl
+  : "/api";
