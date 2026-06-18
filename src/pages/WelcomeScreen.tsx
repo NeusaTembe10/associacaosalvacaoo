@@ -16,17 +16,20 @@ export default function WelcomeScreen() {
       <div className="flex flex-col items-center justify-center w-full px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Logo */}
         <div className="flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-gradient-to-br from-primary-400 to-primary-500 shadow-xl mb-8">
-          <img src={logo} alt="Logo" className="w-19 h-19 sm:w-16 sm:h-16 rounded-3xl" />
+          <img
+            src={logo}
+            alt="Logo"
+            className="w-19 h-19 sm:w-16 sm:h-16 rounded-3xl"
+          />
         </div>
 
         {/* Title */}
         <div className="text-center mb-4">
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-white mb-2">
-            
-             Associação
+            Associação
           </h1>
           <h2 className="text-2xl sm:text-4xl font-semibold text-primary-300 mb-4">
-           Salvação
+            Salvação
           </h2>
           <p className="text-lg sm:text-xl text-primary-200 font-medium mb-6">
             Plantando os céus na terra
@@ -44,10 +47,10 @@ export default function WelcomeScreen() {
 
         {/* CTA Button */}
         <button
-          onClick={() => navigate("/home")}
+          onClick={() => navigate("/login")}
           className="flex items-center justify-center gap-3 px-8 sm:px-10 py-4 sm:py-5 rounded-xl bg-white text-primary-900 font-bold text-lg sm:text-xl shadow-2xl hover:shadow-none hover:scale-105 transition-all duration-300"
         >
-          Começar
+          Fazer login
           <ChevronRight size={24} strokeWidth={3} />
         </button>
 

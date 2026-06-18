@@ -3,8 +3,10 @@ import {
   useContext,
   useState,
   useEffect,
+  useCallback,
   type ReactNode,
 } from "react";
+import { useAuth } from "./AuthContext";
 
 export interface Member {
   _id?: string;
@@ -32,15 +34,21 @@ const MembersContext = createContext<MembersContextValue | null>(null);
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 export function MembersProvider({ children }: { children: ReactNode }) {
+  const auth = useAuth();
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchMembers = async () => {
+  const fetchMembers = useCallback(async () => {
+    if (!auth.isAuthenticated) {
+      setMembers([]);
+      return;
+    }
+
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`${API_URL}/members`);
+      const response = await auth.authFetch(`${API_URL}/members`);
       if (!response.ok) throw new Error("Erro ao buscar membros");
       const data = await response.json();
       setMembers(data);
@@ -49,13 +57,17 @@ export function MembersProvider({ children }: { children: ReactNode }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [auth]);
 
   const addMember = async (member: Omit<Member, "_id">) => {
+    if (!auth.isAuthenticated) {
+      throw new Error("Usuário não autenticado");
+    }
+
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`${API_URL}/members`, {
+      const response = await auth.authFetch(`${API_URL}/members`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(member),
@@ -72,10 +84,14 @@ export function MembersProvider({ children }: { children: ReactNode }) {
   };
 
   const deleteMember = async (id: string) => {
+    if (!auth.isAuthenticated) {
+      throw new Error("Usuário não autenticado");
+    }
+
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`${API_URL}/members/${id}`, {
+      const response = await auth.authFetch(`${API_URL}/members/${id}`, {
         method: "DELETE",
       });
       if (!response.ok) throw new Error("Erro ao deletar membro");
@@ -89,10 +105,14 @@ export function MembersProvider({ children }: { children: ReactNode }) {
   };
 
   const updateMember = async (id: string, updates: Partial<Member>) => {
+    if (!auth.isAuthenticated) {
+      throw new Error("Usuário não autenticado");
+    }
+
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`${API_URL}/members/${id}`, {
+      const response = await auth.authFetch(`${API_URL}/members/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updates),
@@ -109,8 +129,12 @@ export function MembersProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
-    fetchMembers();
-  }, []);
+    if (auth.isAuthenticated) {
+      fetchMembers();
+    } else {
+      setMembers([]);
+    }
+  }, [auth.isAuthenticated, fetchMembers]);
 
   return (
     <MembersContext.Provider

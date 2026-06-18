@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   UserPlus,
@@ -7,11 +8,65 @@ import {
   Eye,
   ArrowRight,
 } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
 import { useMembers } from "../context/MembersContext";
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+
+interface Culto {
+  _id?: string;
+  data: string;
+  tipo: string;
+  localizacao: string;
+  descricao?: string;
+  membros: string[];
+}
 
 export default function CultosScreen() {
   const navigate = useNavigate();
+  const auth = useAuth();
   const { members } = useMembers();
+  const [cultos, setCultos] = useState<Culto[]>([]);
+  const [loadingCultos, setLoadingCultos] = useState(false);
+  const [cultosError, setCultosError] = useState<string | null>(null);
+
+  const totalMembers = members.length;
+  const totalCultos = cultos.length;
+  const visitantesCount = members.filter(
+    (member) => member.status === "Visitante",
+  ).length;
+  const novosCount = members.filter(
+    (member) => member.status === "Novo Convertido",
+  ).length;
+
+  useEffect(() => {
+    const fetchCultos = async () => {
+      if (!auth.isAuthenticated) {
+        setCultos([]);
+        return;
+      }
+
+      setLoadingCultos(true);
+      setCultosError(null);
+
+      try {
+        const response = await auth.authFetch(`${API_URL}/cultos`);
+        if (!response.ok) {
+          throw new Error("Erro ao buscar cultos");
+        }
+        const data = await response.json();
+        setCultos(data);
+      } catch (err) {
+        setCultosError(
+          err instanceof Error ? err.message : "Erro desconhecido",
+        );
+      } finally {
+        setLoadingCultos(false);
+      }
+    };
+
+    fetchCultos();
+  }, [auth]);
 
   const options = [
     {
@@ -66,28 +121,56 @@ export default function CultosScreen() {
       {/* Content */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-12">
           <div className="bg-white rounded-lg shadow-md p-6">
             <p className="text-slate-600 text-sm font-medium mb-2">
               Total de Membros
             </p>
             <h3 className="text-4xl font-bold text-slate-900">
-              {members.length}
+              {totalMembers}
             </h3>
+            <p className="text-xs text-slate-500 mt-2">
+              Dados reais do backend
+            </p>
           </div>
           <div className="bg-white rounded-lg shadow-md p-6">
             <p className="text-slate-600 text-sm font-medium mb-2">
-              Presentes Hoje
+              Cultos agendados
             </p>
-            <h3 className="text-4xl font-bold text-green-600">28</h3>
+            <h3 className="text-4xl font-bold text-green-600">{totalCultos}</h3>
+            <p className="text-xs text-green-600 mt-2">Cultos cadastrados</p>
           </div>
           <div className="bg-white rounded-lg shadow-md p-6">
             <p className="text-slate-600 text-sm font-medium mb-2">
-              Taxa de Presença
+              Visitantes
             </p>
-            <h3 className="text-4xl font-bold text-blue-600">89%</h3>
+            <h3 className="text-4xl font-bold text-purple-600">
+              {visitantesCount}
+            </h3>
+            <p className="text-xs text-purple-600 mt-2">Status: Visitante</p>
+          </div>
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <p className="text-slate-600 text-sm font-medium mb-2">
+              Novos convertidos
+            </p>
+            <h3 className="text-4xl font-bold text-blue-600">{novosCount}</h3>
+            <p className="text-xs text-blue-600 mt-2">
+              Status: Novo Convertido
+            </p>
           </div>
         </div>
+
+        {cultosError && (
+          <div className="mb-6 rounded-xl bg-rose-50 border border-rose-200 p-4 text-rose-700">
+            Erro ao carregar cultos: {cultosError}
+          </div>
+        )}
+
+        {loadingCultos && (
+          <div className="mb-6 rounded-xl bg-slate-50 border border-slate-200 p-4 text-slate-600">
+            Carregando cultos...
+          </div>
+        )}
 
         {/* Options Grid */}
         <h2 className="text-2xl font-bold text-slate-900 mb-6">
@@ -117,6 +200,60 @@ export default function CultosScreen() {
               </div>
             </button>
           ))}
+        </div>
+
+        <div className="mt-12">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-2xl font-bold text-slate-900">
+                Cultos agendados
+              </h2>
+              <p className="text-slate-600 text-sm">
+                {cultos.length} culto{cultos.length !== 1 ? "s" : ""} carregado
+                {cultos.length !== 1 ? "s" : ""} do backend
+              </p>
+            </div>
+          </div>
+
+          {cultos.length === 0 && !loadingCultos ? (
+            <div className="rounded-2xl bg-slate-50 border border-slate-200 p-6 text-slate-600">
+              Nenhum culto registrado ainda. Use o backend para adicionar cultos
+              reais.
+            </div>
+          ) : null}
+
+          <div className="grid gap-4">
+            {cultos.map((culto) => (
+              <div
+                key={culto._id ?? culto.data}
+                className="bg-white rounded-2xl shadow-md p-6 border border-slate-200"
+              >
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                  <div>
+                    <p className="text-slate-500 text-sm">
+                      {new Date(culto.data).toLocaleDateString("pt-BR", {
+                        weekday: "long",
+                        day: "2-digit",
+                        month: "long",
+                        year: "numeric",
+                      })}
+                    </p>
+                    <h3 className="text-xl font-bold text-slate-900 mt-2">
+                      {culto.tipo}
+                    </h3>
+                    <p className="text-slate-600 mt-1">{culto.localizacao}</p>
+                  </div>
+                  <span className="inline-flex items-center rounded-full bg-primary-100 text-primary-700 px-3 py-1 text-xs font-semibold">
+                    {culto.membros.length} membro
+                    {culto.membros.length !== 1 ? "s" : ""}
+                  </span>
+                </div>
+                {culto.descricao ? (
+                  <p className="text-slate-600 mt-4">{culto.descricao}</p>
+                ) : null}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>

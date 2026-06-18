@@ -10,7 +10,7 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps) {
   const location = useLocation();
-  const isWelcome = location.pathname === "/";
+  const isWelcome = location.pathname === "/" || location.pathname === "/login";
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   if (isWelcome) {

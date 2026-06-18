@@ -1,5 +1,6 @@
 import { Menu, Bell, Settings, LogOut } from "lucide-react";
 import { useState } from "react";
+import { useAuth } from "../context/AuthContext";
 
 interface TopBarProps {
   onMenuClick: () => void;
@@ -10,17 +11,19 @@ const hora = agora.getHours();
 let saudacao = "";
 
 if (hora < 12) {
-    saudacao = "Bom dia!";
+  saudacao = "Bom dia!";
 } else if (hora < 18) {
-    saudacao = "Boa tarde!";
+  saudacao = "Boa tarde!";
 } else {
-    saudacao = "Boa noite!";
+  saudacao = "Boa noite!";
 }
 
 console.log(saudacao);
 
 export default function TopBar({ onMenuClick }: TopBarProps) {
   const [showDropdown, setShowDropdown] = useState(false);
+  const auth = useAuth();
+  const userName = auth.user?.name ?? "João";
 
   return (
     <header className="sticky top-0 z-30 bg-white border-b border-slate-200 shadow-sm ml-3">
@@ -34,12 +37,16 @@ export default function TopBar({ onMenuClick }: TopBarProps) {
             <Menu size={24} />
           </button>
           <div className="hidden sm:block">
-            <h2 className="text-xl font-bold text-slate-900">Olá, João! 👋</h2>
+            <h2 className="text-xl font-bold text-slate-900">
+              Olá, {userName}! 👋
+            </h2>
             <p className="text-sm text-slate-500">Bem-vindo de volta</p>
             <p>{saudacao}</p>
           </div>
           <div className="sm:hidden">
-            <p className="text-sm font-semibold text-slate-900">Olá, João!</p>
+            <p className="text-sm font-semibold text-slate-900">
+              Olá, {userName}!
+            </p>
           </div>
         </div>
 

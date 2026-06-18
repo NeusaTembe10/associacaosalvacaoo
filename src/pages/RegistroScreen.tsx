@@ -61,7 +61,7 @@ export default function RegistroScreen() {
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold">Registrar Membro</h1>
             <p className="text-primary-200 text-sm sm:text-base">
-              Adicione um novo membro à comunidade
+              Adicione um novo membro à igreja
             </p>
           </div>
         </div>
@@ -173,7 +173,7 @@ export default function RegistroScreen() {
               <input
                 value={form.contacto}
                 onChange={update("contacto")}
-                placeholder="Ex: +244 923 456 789"
+                placeholder="Ex: +258 823 456 789"
                 disabled={loading}
                 type="tel"
                 className="w-full px-4 py-3 rounded-lg border border-slate-300 bg-slate-50 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:opacity-50 transition-all"
