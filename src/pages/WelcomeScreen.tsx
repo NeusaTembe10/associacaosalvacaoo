@@ -16,7 +16,7 @@ export default function WelcomeScreen() {
       <div className="flex flex-col items-center justify-center w-full px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Logo */}
         <div className="flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-gradient-to-br from-primary-400 to-primary-500 shadow-xl mb-8">
-          <img src={logo} alt="Logo" className="w-12 h-12 sm:w-16 sm:h-16 rounded-3xl" />
+          <img src={logo} alt="Logo" className="w-19 h-19 sm:w-16 sm:h-16 rounded-3xl" />
         </div>
 
         {/* Title */}
@@ -25,7 +25,7 @@ export default function WelcomeScreen() {
             
              Associação
           </h1>
-          <h2 className="text-2xl sm:text-3xl font-semibold text-primary-300 mb-4">
+          <h2 className="text-2xl sm:text-4xl font-semibold text-primary-300 mb-4">
            Salvação
           </h2>
           <p className="text-lg sm:text-xl text-primary-200 font-medium mb-6">
