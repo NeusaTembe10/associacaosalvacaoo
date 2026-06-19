@@ -6,7 +6,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { API_URL } from "../lib/api";
+// import { API_URL } from "../lib/api";
 
 interface User {
   name?: string;
@@ -25,17 +25,6 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
-const parseJwt = (token: string): User | null => {
-  try {
-    const payload = JSON.parse(atob(token.split(".")[1]));
-    return {
-      name: payload.name,
-    };
-  } catch {
-    return null;
-  }
-};
-
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
@@ -43,62 +32,66 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const savedToken = localStorage.getItem("salvacao_token");
-    if (savedToken) {
-      setToken(savedToken);
-      setUser(parseJwt(savedToken));
-    }
+    // TODO: reactivar quando backend estiver estável
+    // const savedToken = localStorage.getItem("salvacao_token");
+    // if (savedToken) {
+    //   setToken(savedToken);
+    //   setUser(parseJwt(savedToken));
+    // }
+
+    // Fase inicial: utilizador sempre autenticado
+    setToken("local");
+    setUser({ name: "Utilizador" });
   }, []);
 
   const login = async (name: string, password: string) => {
     setLoading(true);
-    setError(null);
 
-    try {
-      const response = await fetch(`${API_URL}/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, password }),
-      });
+    // TODO: reactivar autenticação com backend
+    // try {
+    //   const response = await fetch(`${API_URL}/auth/login`, {
+    //     method: "POST",
+    //     headers: { "Content-Type": "application/json" },
+    //     body: JSON.stringify({ name, password }),
+    //   });
+    //   const data = await response.json();
+    //   if (!response.ok) throw new Error(data.error || "Falha no login");
+    //   setToken(data.token);
+    //   localStorage.setItem("salvacao_token", data.token);
+    //   setUser(parseJwt(data.token));
+    // } catch (err) {
+    //   setError(err instanceof Error ? err.message : "Erro desconhecido");
+    //   throw err;
+    // } finally {
+    //   setLoading(false);
+    // }
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Falha no login");
-      }
-
-      setToken(data.token);
-      localStorage.setItem("salvacao_token", data.token);
-      setUser(parseJwt(data.token));
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Erro desconhecido");
-      throw err;
-    } finally {
-      setLoading(false);
-    }
+    // Fase inicial: login local
+    setToken("local");
+    setUser({ name });
+    setLoading(false);
   };
 
   const logout = () => {
     setToken(null);
     setUser(null);
-    localStorage.removeItem("salvacao_token");
+    // localStorage.removeItem("salvacao_token");
   };
 
   const authFetch = async (input: RequestInfo, init: RequestInit = {}) => {
-    if (!token) {
-      throw new Error("Usuário não autenticado");
-    }
+    // TODO: reactivar verificação de token quando backend estiver estável
+    // if (!token) throw new Error("Usuário não autenticado");
+    // const headers = new Headers(init.headers ?? {});
+    // headers.set("Authorization", `Bearer ${token}`);
+    // const response = await fetch(input, { ...init, headers });
+    // if (response.status === 401) {
+    //   logout();
+    //   throw new Error("Sessão expirada. Faça login novamente.");
+    // }
+    // return response;
 
-    const headers = new Headers(init.headers ?? {});
-    headers.set("Authorization", `Bearer ${token}`);
-
-    const response = await fetch(input, { ...init, headers });
-    if (response.status === 401) {
-      logout();
-      throw new Error("Sessão expirada. Faça login novamente.");
-    }
-
-    return response;
+    // Fase inicial: fetch sem autenticação
+    return fetch(input, init);
   };
 
   const value = useMemo(
