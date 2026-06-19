@@ -18,12 +18,16 @@ export default function LoginScreen() {
       return;
     }
 
-    try {
-      await auth.login(name, password);
-      navigate("/home", { replace: true });
-    } catch (error) {
-      setLocalError(error instanceof Error ? error.message : "Falha no login");
-    }
+    // TODO: reactivar autenticação quando o backend estiver estável
+    // try {
+    //   await auth.login(name, password);
+    //   navigate("/home", { replace: true });
+    // } catch (error) {
+    //   setLocalError(error instanceof Error ? error.message : "Falha no login");
+    // }
+
+    // Fase inicial: login local sem backend
+    navigate("/home", { replace: true });
   };
 
   return (
