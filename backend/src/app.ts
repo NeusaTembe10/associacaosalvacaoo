@@ -48,6 +48,9 @@ connectDb().catch((err) =>
 app.use("/api/auth", authRoutes);
 app.use("/api/members", verifyToken, memberRoutes);
 app.use("/api/cultos", verifyToken, cultoRoutes);
+app.post("/api/test", (req, res) => {
+  res.json({ ok: true });
+});
 
 // HEALTH CHECK
 app.get("/api/health", (req: Request, res: Response) => {
