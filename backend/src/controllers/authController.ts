@@ -7,6 +7,7 @@ const FIXED_PASSWORD = process.env.AUTH_PASSWORD || "SalvacaoApp@2026";
 
 export const login = async (req: Request, res: Response) => {
   const errors = validationResult(req);
+
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
@@ -24,7 +25,11 @@ export const login = async (req: Request, res: Response) => {
       { expiresIn: "12h" }
     );
 
-    return res.json({ token, user: { name: name.trim() } });
+    return res.status(200).json({
+      token,
+      user: { name: name.trim() }
+    });
+
   } catch (error) {
     return res.status(500).json({ error: "Erro na autenticação" });
   }

@@ -37,5 +37,9 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
   console.error(err);
   res.status(err.status || 500).json({ error: err.message || "Erro interno do servidor" });
 });
+app.use((req, res, next) => {
+  console.log(req.method, req.url);
+  next();
+});
 
 export default app;

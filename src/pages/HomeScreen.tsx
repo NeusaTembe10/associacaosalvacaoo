@@ -46,12 +46,12 @@ export default function HomeScreen() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 pb-8">
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 pb-8 pl-8">
       {/* Hero Section */}
       <div className="bg-gradient-to-r from-primary-900 to-primary-800 text-white px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         <div className="max-w-6xl mx-auto">
           <h1 className="text-3xl sm:text-4xl font-bold mb-2">
-           O seu Dashboard de Gestão de Membros, {userName}
+            O seu Dashboard de Gestão de Membros, {userName}
           </h1>
           <p className="text-primary-200 text-base sm:text-lg"></p>
         </div>

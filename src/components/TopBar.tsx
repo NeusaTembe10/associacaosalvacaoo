@@ -11,11 +11,11 @@ const hora = agora.getHours();
 let saudacao = "";
 
 if (hora < 12) {
-  saudacao = "Bom dia!";
+  saudacao = "Bom dia";
 } else if (hora < 18) {
-  saudacao = "Boa tarde!";
+  saudacao = "Boa tarde";
 } else {
-  saudacao = "Boa noite!";
+  saudacao = "Boa noite";
 }
 
 console.log(saudacao);
@@ -38,10 +38,10 @@ export default function TopBar({ onMenuClick }: TopBarProps) {
           </button>
           <div className="hidden sm:block">
             <h2 className="text-xl font-bold text-slate-900">
-              Olá, {userName}! 👋
+              {saudacao}, {userName}! 👋
             </h2>
             <p className="text-sm text-slate-500">Bem-vindo de volta</p>
-            <p>{saudacao}</p>
+           
           </div>
           <div className="sm:hidden">
             <p className="text-sm font-semibold text-slate-900">

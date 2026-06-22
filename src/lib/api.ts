@@ -8,10 +8,3 @@ export const API_URL = apiUrl && apiUrl !== ""
       ? "/api"
       : apiUrl
   : "/api";
-const res = await fetch('/api/...');
-if (!res.ok || !res.headers.get('content-type')?.includes('application/json')) {
-  const text = await res.text();
-  console.error('Resposta inesperada:', text);
-  throw new Error('Erro do servidor');
-}
-const data = await res.json();

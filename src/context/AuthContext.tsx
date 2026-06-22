@@ -6,7 +6,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-// import { API_URL } from "../lib/api";
+import { API_URL } from "../lib/api";
 
 interface User {
   name?: string;
@@ -25,73 +25,104 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
+function parseJwt(token: string): User | null {
+  try {
+    const payload = token.split(".")[1];
+
+    if (!payload) return null;
+
+    const decoded = JSON.parse(atob(payload));
+
+    return {
+      name: decoded.name,
+    };
+  } catch {
+    return null;
+  }
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // TODO: reactivar quando backend estiver estável
-    // const savedToken = localStorage.getItem("salvacao_token");
-    // if (savedToken) {
-    //   setToken(savedToken);
-    //   setUser(parseJwt(savedToken));
-    // }
+    const savedToken = localStorage.getItem("salvacao_token");
 
-    // Fase inicial: utilizador sempre autenticado
-    setToken("local");
-    setUser({ name: "Utilizador" });
+    if (savedToken) {
+      setToken(savedToken);
+      setUser(parseJwt(savedToken));
+    }
+
+    setLoading(false);
   }, []);
 
   const login = async (name: string, password: string) => {
     setLoading(true);
+    setError(null);
 
-    // TODO: reactivar autenticação com backend
-    // try {
-    //   const response = await fetch(`${API_URL}/auth/login`, {
-    //     method: "POST",
-    //     headers: { "Content-Type": "application/json" },
-    //     body: JSON.stringify({ name, password }),
-    //   });
-    //   const data = await response.json();
-    //   if (!response.ok) throw new Error(data.error || "Falha no login");
-    //   setToken(data.token);
-    //   localStorage.setItem("salvacao_token", data.token);
-    //   setUser(parseJwt(data.token));
-    // } catch (err) {
-    //   setError(err instanceof Error ? err.message : "Erro desconhecido");
-    //   throw err;
-    // } finally {
-    //   setLoading(false);
-    // }
+    try {
+      const response = await fetch(`${API_URL}/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name, password }),
+      });
 
-    // Fase inicial: login local
-    setToken("local");
-    setUser({ name });
-    setLoading(false);
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Falha no login");
+      }
+
+      setToken(data.token);
+      localStorage.setItem("salvacao_token", data.token);
+
+      setUser(parseJwt(data.token));
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Erro desconhecido";
+
+      setError(message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
   };
 
   const logout = () => {
     setToken(null);
     setUser(null);
-    // localStorage.removeItem("salvacao_token");
+    setError(null);
+
+    localStorage.removeItem("salvacao_token");
   };
 
-  const authFetch = async (input: RequestInfo, init: RequestInit = {}) => {
-    // TODO: reactivar verificação de token quando backend estiver estável
-    // if (!token) throw new Error("Usuário não autenticado");
-    // const headers = new Headers(init.headers ?? {});
-    // headers.set("Authorization", `Bearer ${token}`);
-    // const response = await fetch(input, { ...init, headers });
-    // if (response.status === 401) {
-    //   logout();
-    //   throw new Error("Sessão expirada. Faça login novamente.");
-    // }
-    // return response;
+  const authFetch = async (
+    input: RequestInfo,
+    init: RequestInit = {}
+  ) => {
+    if (!token) {
+      throw new Error("Usuário não autenticado");
+    }
 
-    // Fase inicial: fetch sem autenticação
-    return fetch(input, init);
+    const headers = new Headers(init.headers);
+
+    headers.set("Authorization", `Bearer ${token}`);
+
+    const response = await fetch(input, {
+      ...init,
+      headers,
+    });
+
+    if (response.status === 401) {
+      logout();
+      throw new Error("Sessão expirada. Faça login novamente.");
+    }
+
+    return response;
   };
 
   const value = useMemo(
@@ -100,21 +131,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       user,
       loading,
       error,
-      isAuthenticated: Boolean(token),
+      isAuthenticated: !!token,
       login,
       logout,
       authFetch,
     }),
-    [token, user, loading, error],
+    [token, user, loading, error]
   );
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  );
 }
 
 export function useAuth() {
-  const ctx = useContext(AuthContext);
-  if (!ctx) {
-    throw new Error("useAuth deve ser usado dentro de AuthProvider");
+  const context = useContext(AuthContext);
+
+  if (!context) {
+    throw new Error(
+      "useAuth deve ser usado dentro de um AuthProvider"
+    );
   }
-  return ctx;
+
+  return context;
 }
