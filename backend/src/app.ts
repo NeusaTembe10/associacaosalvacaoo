@@ -3,10 +3,10 @@ import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 
-import memberRoutes from "./routes/memberRoutes.js";
-import cultoRoutes from "./routes/cultoRoutes.js";
-import authRoutes from "./routes/authRoutes.js";
-import { verifyToken } from "./middleware/authMiddleware.js";
+import memberRoutes from "./routes/memberRoutes";
+import cultoRoutes from "./routes/cultoRoutes";
+import authRoutes from "./routes/authRoutes";
+import { verifyToken } from "./middleware/authMiddleware";
 
 dotenv.config();
 
