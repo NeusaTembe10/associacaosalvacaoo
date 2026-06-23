@@ -1,5 +1,5 @@
 import express, { Request, Response, NextFunction } from "express";
-import cors from "cors";
+import cors, { CorsOptions } from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 
@@ -12,10 +12,15 @@ dotenv.config();
 
 const app = express();
 
+const corsOptions: CorsOptions = {
+  origin: process.env.FRONTEND_URL || "*", // Use a variável de ambiente para o URL do frontend
+  optionsSuccessStatus: 200,
+};
+
 // =====================
 // MIDDLEWARE GLOBAL
 // =====================
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // LOG (DEVE VIR AQUI EM CIMA)
@@ -27,27 +32,42 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 // =====================
 // MONGODB
 // =====================
+const MONGO_URI = process.env.MONGO_URI;
+if (!MONGO_URI) {
+  if (process.env.NODE_ENV === "production") {
+    throw new Error(
+      "MONGO_URI must be defined in the production environment"
+    );
+  } else {
+    console.warn("MONGO_URI is not defined. Using fallback for development.");
+  }
+}
+
 const connectDb = async () => {
   if (mongoose.connection.readyState >= 1) return;
-
-  await mongoose.connect(
-    process.env.MONGO_URI ||
-      "mongodb://localhost:27017/associacao_salvacao"
-  );
-
-  console.log("✓ MongoDB connected");
+  try {
+    await mongoose.connect(
+      MONGO_URI || "mongodb://localhost:27017/associacao_salvacao"
+    );
+    console.log("✓ MongoDB connected");
+  } catch (err) {
+    console.error("✗ MongoDB connection error:", err);
+    // Em um ambiente de produção, você pode querer que o app pare se não conseguir conectar.
+    // process.exit(1);
+  }
 };
 
-connectDb().catch((err) =>
-  console.error("✗ MongoDB connection error:", err)
-);
+app.use(async (req: Request, res: Response, next: NextFunction) => {
+  await connectDb();
+  next();
+});
 
 // =====================
 // ROTAS
 // =====================
-app.use("/api/auth", authRoutes);
-app.use("/api/members", verifyToken, memberRoutes);
-app.use("/api/cultos", verifyToken, cultoRoutes);
+app.use("/auth", authRoutes);
+app.use("/members", verifyToken, memberRoutes);
+app.use("/cultos", verifyToken, cultoRoutes);
 app.post("/api/test", (req, res) => {
   res.json({ ok: true });
 });
